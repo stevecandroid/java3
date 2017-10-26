@@ -1,4 +1,4 @@
-package com.xt.java3.ui.main.frag;
+package com.xt.java3.ui.main.frag.contacts;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,8 +13,6 @@ import android.view.ViewGroup;
 import com.xt.java3.R;
 import com.xt.java3.User;
 import com.xt.java3.ui.adapter.FriendListAdapter;
-import com.xt.java3.ui.main.MainContract;
-import com.xt.java3.ui.main.ContactsPresenter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +24,10 @@ import butterknife.ButterKnife;
  * Created by steve on 17-10-24.
  */
 
-public class ContactsFrag extends Fragment implements MainContract.View {
+public class ContactsFrag extends Fragment implements ContactsContract.View {
 
     List<User> allFriends = new ArrayList<>();
-    MainContract.Presenter mPresenter = new ContactsPresenter(this);
+    ContactsContract.Presenter mPresenter = new ContactsPresenter(this);
     FriendListAdapter adapter;
 
     @BindView(R.id.friends_list)

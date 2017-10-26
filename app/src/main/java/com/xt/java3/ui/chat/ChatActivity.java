@@ -1,6 +1,11 @@
 package com.xt.java3.ui.chat;
 
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,10 +21,12 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.xt.java3.App;
 import com.xt.java3.R;
 import com.xt.java3.User;
-import com.xt.java3.network.chat.WeeChat;
-import com.xt.java3.ui.adapter.Message;
+
+import com.xt.java3.service.WebService;
+import com.xt.java3.modules.event.Message;
 import com.xt.java3.ui.adapter.RecycleChatAdapter;
 import com.xt.java3.util.BitmapUtils;
+import com.xt.java3.util.Utils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -32,7 +39,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity implements ChatContract.View {
 
     @BindView(R.id.message)
     EditText message;
@@ -49,11 +56,28 @@ public class ChatActivity extends AppCompatActivity {
     @BindView(R.id.send)
     Button send;
 
-    User user ;
+    private User user ;
 
-    List<Message> messages = new ArrayList<>();
+    private List<Message> messages = new ArrayList<>();
 
-    RecycleChatAdapter adapter = new RecycleChatAdapter(messages);
+    private RecycleChatAdapter adapter = new RecycleChatAdapter(messages);
+
+    private ChatContract.Presenter mPresenter;
+
+    private WebService webService;
+
+    private ServiceConnection conn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder binder) {
+            Log.e("ChatActivity","CONNECT");
+            webService = ((WebService.ServiceBinder)binder).getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            webService = null;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,8 +86,18 @@ public class ChatActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
         init();
+        mPresenter = new ChatPresenter(this);
+        mPresenter.getMessage(user.getId());
+
+        bindService(new Intent(this, WebService.class),conn, Context.BIND_AUTO_CREATE);
+
     }
 
+    /**
+     * Evenbus在选择聊天对象的时候发送该对象
+     * @param user 得到聊天的对象信息
+     *             设置聊天对象的图片以及名字
+     */
     @Subscribe(threadMode = ThreadMode.MAIN ,sticky = true)
     public void getUser(User user){
         this.user = user;
@@ -71,34 +105,63 @@ public class ChatActivity extends AppCompatActivity {
         info.setText(user.getNickname());
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN,sticky = true)
+    /**
+     *
+     * @param msg 服务器发过来的消息
+     * 后台服务回调onMesaage 利用EvenBus 发送消息
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void getMessge(Message msg){
         messages.add(msg);
         adapter.notifyItemInserted(messages.size());
+        recycleChat.smoothScrollToPosition(messages.size());
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        unbindService(conn);
         EventBus.getDefault().unregister(this);
     }
 
     @OnClick(R.id.send)
     public void onClick(View view ){
-        messages.add(new Message(1,message.getText().toString()));
-        App.weeChat.send(praseMessage(message.getText().toString(), String.valueOf(App.mUser.getId()),new String[]{String.valueOf(user.getId())}));
-        message.setText("");
-        adapter.notifyItemInserted(messages.size());
+        //空内容不允许发送
+        if(!message.getText().toString().equals("")) {
+            //添加聊天的一项记录
+            messages.add(new Message(System.currentTimeMillis(), 1, message.getText().toString()));
+            //发送聊天信息至服务器
+            webService.send(Utils.encodeMessage(message.getText().toString(), String.valueOf(App.mUser.getId()), new String[]{String.valueOf(user.getId())}));
+            //重置聊天框
+            message.setText("");
+            //更新UI
+            adapter.notifyItemInserted(messages.size());
+            recycleChat.smoothScrollToPosition(messages.size());
+        }else{
+            ToastUtils.showShort("empty mesasge is not allow !");
+        }
     }
 
+    /**
+     * 初始化
+     */
     private void init(){
-
         recycleChat.setLayoutManager(new LinearLayoutManager(this));
         recycleChat.setAdapter(adapter);
+    }
+
+    /**
+     * 第一次进入活动调用mPresenter.getMessage(user.getId()); 的回调函数
+     * 获取聊天记录
+     * @param messages
+     */
+    @Override
+    public void onGetMessages(List<Message> messages) {
+//        int start = this.messages.size();
+        this.messages.addAll(messages);
+        adapter.notifyDataSetChanged();
+        recycleChat.scrollToPosition(messages.size());
 
     }
 
-    private String praseMessage(String message, String from , String[] to ){
-        return "from'"+ App.mUser.getId()+"'"+"to>" + to[0] + "<"+ message;
-    }
 }

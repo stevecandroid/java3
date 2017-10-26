@@ -1,4 +1,4 @@
-package com.xt.java3.ui.main;
+package com.xt.java3.ui.main.frag;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;

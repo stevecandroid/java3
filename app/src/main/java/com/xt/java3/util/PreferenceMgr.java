@@ -53,6 +53,7 @@ public class PreferenceMgr {
     public synchronized void clear(String key){
         SharedPreferences.Editor editor = preferences.edit();
         editor.remove(key);
+        editor.apply();
     }
 
     public synchronized  <T>  T get(String key , T o ){

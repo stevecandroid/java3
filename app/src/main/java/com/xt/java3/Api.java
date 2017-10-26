@@ -6,6 +6,7 @@ import com.xt.java3.modules.response.BaseResponse;
 import com.xt.java3.modules.response.FriendsResponse;
 import com.xt.java3.modules.response.LoginResponse;
 import com.xt.java3.modules.response.SearchPeopleResopnse;
+import com.xt.java3.modules.response.SearchRecordResponse;
 
 import io.reactivex.Observable;
 import retrofit2.http.Body;
@@ -13,7 +14,6 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
-import retrofit2.http.PUT;
 import retrofit2.http.Query;
 
 /**
@@ -40,5 +40,8 @@ public interface Api {
 
     @GET("/people/search")
     Observable<SearchPeopleResopnse> search(@Query("id") int id , @Query("email") String email , @Query(value = "nickname",encoded = true) String nickname);
+
+    @GET("/record/search")
+    Observable<SearchRecordResponse> searchRecods(@Query("to") int to );
 }
 

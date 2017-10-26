@@ -1,22 +1,15 @@
 package com.xt.java3;
 
-import android.util.Log;
-
 import com.xt.java3.base.BaseError;
 import com.xt.java3.modules.request.LoginBody;
 import com.xt.java3.modules.request.RegisterBody;
 import com.xt.java3.modules.response.BaseResponse;
 import com.xt.java3.modules.response.FriendsResponse;
 import com.xt.java3.modules.response.LoginResponse;
+import com.xt.java3.modules.response.SearchPeopleResopnse;
+import com.xt.java3.modules.response.SearchRecordResponse;
 import com.xt.java3.ui.login.LoginPresenter;
 import com.xt.java3.ui.register.RegisterPresenter;
-
-import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.drafts.Draft_6455;
-import org.java_websocket.handshake.ServerHandshake;
-
-import java.net.URI;
-import java.net.URISyntaxException;
 
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
@@ -105,6 +98,28 @@ public class User {
             public void accept(FriendsResponse friendsResponse) throws Exception {
                 if(friendsResponse.getStatus() != 0){
                     throw new BaseError(friendsResponse.getStatus());
+                }
+            }
+        });
+    }
+
+    public static Observable<SearchRecordResponse> getRecords(int to){
+        return App.client.searchRecods(to).doOnNext(new Consumer<SearchRecordResponse>() {
+            @Override
+            public void accept(SearchRecordResponse response) throws Exception {
+                if(response.getStatus() != 0){
+                    throw new RuntimeException("错误");
+                }
+            }
+        });
+    }
+
+    public static Observable<SearchPeopleResopnse> searchById(int id){
+        return App.client.search(id,null,null).doOnNext(new Consumer<SearchPeopleResopnse>() {
+            @Override
+            public void accept(SearchPeopleResopnse resopnse) throws Exception {
+                if(resopnse.getStatus() != 0){
+                    throw new RuntimeException("查找失败");
                 }
             }
         });

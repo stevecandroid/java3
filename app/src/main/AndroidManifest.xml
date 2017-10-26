@@ -3,6 +3,7 @@
     package="com.xt.java3">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:name=".App"
@@ -21,15 +22,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".ui.register.RegisterActivity"></activity>
-
+        <activity android:name=".ui.register.RegisterActivity" />
         <activity android:name=".ui.main.MainActivity" />
+        <activity
+            android:name=".ui.chat.ChatActivity"
+            android:windowSoftInputMode="stateHidden" />
 
-        <activity android:name=".ui.chat.ChatActivity"
-            android:windowSoftInputMode="stateHidden">
+        <service
+            android:name=".service.WebService"
+            android:enabled="true"
+            android:exported="true" />
 
-        </activity>
+        <activity android:name=".ui.profile.ForeProfileActivity" />
+        <activity android:name=".ui.profile.ProfileActivity"></activity>
     </application>
 
 </manifest>

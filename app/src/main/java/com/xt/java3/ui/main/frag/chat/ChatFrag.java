@@ -1,4 +1,4 @@
-package com.xt.java3.ui.main.frag;
+package com.xt.java3.ui.main.frag.chat;
 
 
 import android.os.Bundle;

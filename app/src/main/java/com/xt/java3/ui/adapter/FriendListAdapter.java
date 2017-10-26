@@ -49,6 +49,7 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.My
             @Override
             public void onClick(View v) {
 
+                //动画所需的图片通过evenbus 传给下一个活动
                 EventBus.getDefault().postSticky(users.get(holder.getAdapterPosition()));
 
                 Pair a = Pair.create(holder.name,"text");
@@ -71,7 +72,6 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.My
 
     @Override
     public int getItemCount() {
-        Log.e("FriendListAdapter",users.size() +"SIZE");
         return users.size();
     }
 

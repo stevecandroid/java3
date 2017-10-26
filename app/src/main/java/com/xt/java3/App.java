@@ -5,8 +5,9 @@ import android.app.Application;
 import com.blankj.utilcode.util.Utils;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.xt.java3.network.CookieInterceptor;
-import com.xt.java3.network.chat.WeeChat;
 import com.xt.java3.util.PreferenceMgr;
+
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -22,7 +23,6 @@ public class App extends Application{
     public static App app;
     public static Api client;
     public static User mUser;
-    public static WeeChat weeChat;
 
     @Override
     public void onCreate() {
@@ -31,7 +31,11 @@ public class App extends Application{
 
         cookieMgr = new PreferenceMgr("cookie");
 
-        OkHttpClient okHttpClient = new OkHttpClient.Builder().addInterceptor(new CookieInterceptor()).build();
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(8, TimeUnit.SECONDS)
+                .addInterceptor(new CookieInterceptor())
+                .build();
+
         client = new Retrofit.Builder().client(okHttpClient).baseUrl(Constant.IP)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

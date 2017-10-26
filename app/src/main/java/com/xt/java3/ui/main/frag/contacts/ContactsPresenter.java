@@ -1,7 +1,6 @@
-package com.xt.java3.ui.main;
+package com.xt.java3.ui.main.frag.contacts;
 
 import com.xt.java3.User;
-import com.xt.java3.WeeChatServer;
 import com.xt.java3.modules.response.FriendsResponse;
 import com.xt.java3.modules.response.SearchPeopleResopnse;
 
@@ -15,12 +14,12 @@ import io.reactivex.schedulers.Schedulers;
  * Created by steve on 17-10-23.
  */
 
-public class ContactsPresenter implements MainContract.Presenter {
+public class ContactsPresenter implements ContactsContract.Presenter {
 
 
-    private MainContract.View view;
+    private ContactsContract.View view;
 
-    public ContactsPresenter(MainContract.View view) {
+    public ContactsPresenter(ContactsContract.View view) {
         this.view = view;
     }
 
@@ -44,7 +43,7 @@ public class ContactsPresenter implements MainContract.Presenter {
 
     @Override
     public void getfrienDetail(String id) {
-        WeeChatServer.searchById(Integer.parseInt(id)).subscribeOn(Schedulers.newThread())
+        User.searchById(Integer.parseInt(id)).subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<SearchPeopleResopnse>() {
                     @Override

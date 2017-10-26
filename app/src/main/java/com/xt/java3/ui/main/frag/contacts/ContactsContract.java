@@ -1,4 +1,4 @@
-package com.xt.java3.ui.main;
+package com.xt.java3.ui.main.frag.contacts;
 
 import com.xt.java3.User;
 import com.xt.java3.base.BaseView;
@@ -9,7 +9,7 @@ import java.util.List;
  * Created by steve on 17-10-23.
  */
 
-public interface MainContract {
+public interface ContactsContract {
 
     interface View extends BaseView<Presenter> {
         void onGetFriendlist(String friends);
