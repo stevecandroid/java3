@@ -1,14 +1,11 @@
 package com.xt.java3;
 
 import android.app.Application;
-
 import com.blankj.utilcode.util.Utils;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.xt.java3.network.CookieInterceptor;
 import com.xt.java3.util.PreferenceMgr;
-
 import java.util.concurrent.TimeUnit;
-
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -42,7 +39,6 @@ public class App extends Application{
                 .build().create(Api.class);
 
         Utils.init(this);
-
 
     }
 

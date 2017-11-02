@@ -22,6 +22,7 @@ import com.xt.java3.App;
 import com.xt.java3.R;
 import com.xt.java3.User;
 
+import com.xt.java3.base.BaseActivity;
 import com.xt.java3.service.WebService;
 import com.xt.java3.modules.event.Message;
 import com.xt.java3.ui.adapter.RecycleChatAdapter;
@@ -38,14 +39,15 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ChatActivity extends AppCompatActivity implements ChatContract.View {
+public class ChatActivity extends BaseActivity implements ChatContract.View {
 
     @BindView(R.id.message)
     EditText message;
 
     @BindView(R.id.avatar)
-    ImageView avatar;
+    CircleImageView avatar;
 
     @BindView(R.id.info)
     TextView info;
@@ -64,32 +66,22 @@ public class ChatActivity extends AppCompatActivity implements ChatContract.View
 
     private ChatContract.Presenter mPresenter;
 
-    private WebService webService;
 
-    private ServiceConnection conn = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder binder) {
-            Log.e("ChatActivity","CONNECT");
-            webService = ((WebService.ServiceBinder)binder).getService();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            webService = null;
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
-        init();
+
+        bindService(new Intent(this, WebService.class),conn, Context.BIND_AUTO_CREATE);
+
         mPresenter = new ChatPresenter(this);
         mPresenter.getMessage(user.getId());
 
-        bindService(new Intent(this, WebService.class),conn, Context.BIND_AUTO_CREATE);
+        init();
 
     }
 
@@ -146,7 +138,9 @@ public class ChatActivity extends AppCompatActivity implements ChatContract.View
      * 初始化
      */
     private void init(){
-        recycleChat.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager llm  = new LinearLayoutManager(this);
+        llm.setStackFromEnd(true);
+        recycleChat.setLayoutManager(llm);
         recycleChat.setAdapter(adapter);
     }
 
@@ -160,8 +154,6 @@ public class ChatActivity extends AppCompatActivity implements ChatContract.View
 //        int start = this.messages.size();
         this.messages.addAll(messages);
         adapter.notifyDataSetChanged();
-        recycleChat.scrollToPosition(messages.size());
-
     }
 
 }

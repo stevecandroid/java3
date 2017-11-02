@@ -1,6 +1,8 @@
 package com.xt.java3.ui.main.frag.contacts;
 
+import com.blankj.utilcode.util.ToastUtils;
 import com.xt.java3.User;
+import com.xt.java3.modules.response.BaseResponse;
 import com.xt.java3.modules.response.FriendsResponse;
 import com.xt.java3.modules.response.SearchPeopleResopnse;
 
@@ -15,6 +17,8 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 public class ContactsPresenter implements ContactsContract.Presenter {
+
+    public static final String ADD_FRIENDS = "addFriends";
 
 
     private ContactsContract.View view;
@@ -66,5 +70,34 @@ public class ContactsPresenter implements ContactsContract.Presenter {
 
                     }
                 });
+    }
+
+    @Override
+    public void deleteFriend(int id , final int pos) {
+        User.deleteFriend(id).subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<BaseResponse>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaseResponse value) {
+                        if(value.getStatus() == 0 )
+                            view.onDeleteSuccess(pos);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        view.onDeleteFail(e);
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
     }
 }

@@ -15,10 +15,13 @@ public interface ContactsContract {
         void onGetFriendlist(String friends);
         void onGetFriendsFail(Throwable e);
         void onGetFriendsDetail(List<User> users);
+        void onDeleteSuccess(int pos);
+        void onDeleteFail(Throwable e);
     }
 
     interface Presenter {
         void getfriends();
         void getfrienDetail(String id);
+        void deleteFriend(int id , int pos);
     }
 }

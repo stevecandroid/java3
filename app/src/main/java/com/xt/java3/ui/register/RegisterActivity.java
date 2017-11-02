@@ -11,6 +11,7 @@ import android.widget.EditText;
 
 import com.blankj.utilcode.util.ToastUtils;
 import com.xt.java3.R;
+import com.xt.java3.base.BaseActivity;
 import com.xt.java3.modules.request.RegisterBody;
 import com.xt.java3.ui.login.LoginActivity;
 
@@ -18,7 +19,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class RegisterActivity extends AppCompatActivity implements RegisterContract.View{
+public class RegisterActivity extends BaseActivity implements RegisterContract.View{
 
     private RegisterContract.Presetner mPresenter;
 

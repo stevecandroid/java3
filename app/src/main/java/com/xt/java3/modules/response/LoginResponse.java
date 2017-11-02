@@ -8,18 +8,18 @@ import com.xt.java3.User;
 
 public class LoginResponse extends BaseResponse {
 
-    private User user;
+    private int userId;
 
-    public LoginResponse(int status, User user) {
+    public LoginResponse(int status, int userId) {
         super(status);
-        this.user = user;
+        this.userId = userId;
     }
 
-    public User getUser() {
-        return user;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUser(int userId) {
+        this.userId = userId;
     }
 }

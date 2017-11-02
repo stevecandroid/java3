@@ -12,13 +12,15 @@ import com.xt.java3.ui.login.LoginPresenter;
 import com.xt.java3.ui.register.RegisterPresenter;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 
 /**
  * Created by steve on 17-10-22.
  */
 
-public class User {
+public class User implements Cloneable{
 
 
     private int id;
@@ -26,6 +28,7 @@ public class User {
     private String email;
     private String nickname;
     private String avatar;
+    private int status;
 
     private static volatile User user;
 
@@ -69,13 +72,33 @@ public class User {
         this.avatar = avatar;
     }
 
+    public int getStatus() {
+        return status;
+    }
 
-    public static Observable<LoginResponse> login(LoginBody request){
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public static Observable<SearchPeopleResopnse> login(LoginBody request){
         return App.client.login(request).doOnNext(new Consumer<LoginResponse>() {
             @Override
             public void accept(LoginResponse response) throws Exception {
                 if(response.getStatus() != LoginPresenter.LOGIN_SUCCESS){
                     throw new BaseError(response.getStatus());
+                }
+            }
+        }).flatMap(new Function<LoginResponse, ObservableSource<SearchPeopleResopnse>>() {
+            @Override
+            public ObservableSource<SearchPeopleResopnse> apply(LoginResponse response) throws Exception {
+                int id = response.getUserId();
+                return App.client.search(id, null, null);
+            }
+        }).doOnNext(new Consumer<SearchPeopleResopnse>() {
+            @Override
+            public void accept(SearchPeopleResopnse response) throws Exception {
+                if (response.getStatus() != 0) {
+                    throw new RuntimeException("登录查询出错");
                 }
             }
         });
@@ -125,4 +148,61 @@ public class User {
         });
     }
 
+    public static Observable<BaseResponse> modifyUser(User user ){
+        return App.client.uploadProfile(user).doOnNext(new Consumer<BaseResponse>() {
+            @Override
+            public void accept(BaseResponse response) throws Exception {
+                if(response.getStatus() != 0 ){
+                    throw new RuntimeException("error response code");
+                }
+            }
+        });
+    }
+
+    public static Observable<SearchPeopleResopnse> judgeState(){
+
+        return App.client.resistent().doOnNext(new Consumer<LoginResponse>() {
+            @Override
+            public void accept(LoginResponse response) throws Exception {
+                if(response.getStatus() != 0 || response.getUserId() == -1){
+                    throw new RuntimeException("登录凭证过时");
+                }
+            }
+        }).flatMap(new Function<LoginResponse, ObservableSource<SearchPeopleResopnse>>() {
+            @Override
+            public ObservableSource<SearchPeopleResopnse> apply(LoginResponse response) throws Exception {
+                return User.searchById(response.getUserId());
+            }
+        }).doOnNext(new Consumer<SearchPeopleResopnse>() {
+            @Override
+            public void accept(SearchPeopleResopnse resopnse) throws Exception {
+                if(resopnse.getStatus() != 0 || resopnse.getUsers().size() < 1)
+                    throw new RuntimeException("登录异常");
+            }
+        });
+
+    }
+
+    public static Observable<BaseResponse> deleteFriend(int id){
+        return App.client.modifyFriends(Constant.ACTION_DELETE,id).doOnNext(new Consumer<BaseResponse>() {
+            @Override
+            public void accept(BaseResponse response) throws Exception {
+                if(response.getStatus() != 0 ){
+                    throw new RuntimeException("删除失败");
+                }
+            }
+        });
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        //String 不可以变, int 不是对象 因此浅复制没问题
+        User user = (User) super.clone();
+        return user;
+    }
+
+    @Override
+    public String toString() {
+        return this.getId() + ":" + this.getNickname() +":" + this.getEmail();
+    }
 }

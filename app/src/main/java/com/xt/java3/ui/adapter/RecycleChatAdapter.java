@@ -31,17 +31,12 @@ public class RecycleChatAdapter extends RecyclerView.Adapter<RecycleChatAdapter.
     @Override
     public MyChatViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        for(Message msg : messages){
-            Log.e("ChatActivity",msg.getDirection()+" direction ");
-        }
-
-
         View view ;
         context = parent.getContext();
         if(viewType == 0 ){
-            view = LayoutInflater.from(context).inflate(R.layout.chat_item_receive,null,false);
+            view = LayoutInflater.from(context).inflate(R.layout.chat_item_receive,parent,false);
         }else{
-            view = LayoutInflater.from(context).inflate(R.layout.chat_item_send,null,false);
+            view = LayoutInflater.from(context).inflate(R.layout.chat_item_send,parent,false);
         }
 
         MyChatViewHolder holder = new MyChatViewHolder(view);

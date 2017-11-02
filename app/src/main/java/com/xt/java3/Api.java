@@ -36,12 +36,15 @@ public interface Api {
 
     @POST("/friends")
     @FormUrlEncoded
-    Observable<BaseResponse> addFriend(@Field(value = "id",encoded = true) int id);
+    Observable<BaseResponse> modifyFriends(@Query("action") int action , @Field(value = "id",encoded = true) int id);
 
     @GET("/people/search")
     Observable<SearchPeopleResopnse> search(@Query("id") int id , @Query("email") String email , @Query(value = "nickname",encoded = true) String nickname);
 
     @GET("/record/search")
     Observable<SearchRecordResponse> searchRecods(@Query("to") int to );
+
+    @POST("/user/modify")
+    Observable<BaseResponse> uploadProfile(@Body User user);
 }
 

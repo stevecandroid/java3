@@ -36,10 +36,14 @@ public class WebService extends Service {
     private WebSocketClient conn;
     private ServiceBinder binder = new ServiceBinder();
 
+    public static final String CHAT_PREFIX = "c:";
+    public static final String ONLINE = "u:";
+    public static final String OFFLINE = "d:";
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-
+        Log.e("WebService","onbind");
         return binder;
     }
 
@@ -56,16 +60,25 @@ public class WebService extends Service {
 
     @Override
     public boolean bindService(Intent service, ServiceConnection conn, int flags) {
+        Log.e("WebService","bind server");
         return super.bindService(service, conn, flags);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+
+
+
         if(conn == null){
             int id ;
+
             if(intent == null || (id = intent.getIntExtra("id",-1)) == -1 ){
                 id = new PreferenceMgr("lastid").get("id", -1);
+            }
+
+            if(id == -1) {
+                stopSelf();
             }
 
             try {
@@ -77,9 +90,21 @@ public class WebService extends Service {
 
                     @Override
                     public void onMessage(String message) {
-                        Log.e("WebService","on message " + message);
-                        EventBus.getDefault().post(new Message(System.currentTimeMillis(),0,message));
-                        manager.notify(1,createNotification(message));
+
+                        Log.e("WebService","onmessage " + message);
+
+                        String prefix = message.substring(0,2);
+                        switch(prefix){
+                            case CHAT_PREFIX :
+                                EventBus.getDefault().post(new Message(System.currentTimeMillis(),0,message));
+                                manager.notify(1,createNotification(message));
+                                break;
+                            case ONLINE:
+                            case OFFLINE:
+                                EventBus.getDefault().post(message);
+                                break;
+                        }
+
                     }
 
                     @Override
@@ -122,6 +147,8 @@ public class WebService extends Service {
 
     @Override
     public void onDestroy() {
+        Log.e("WebService","server stop");
+        conn.close();
         super.onDestroy();
     }
 

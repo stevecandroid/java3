@@ -10,9 +10,12 @@ import android.widget.TextView;
 
 import com.blankj.utilcode.util.ToastUtils;
 import com.xt.java3.App;
+import com.xt.java3.Constant;
 import com.xt.java3.R;
 import com.xt.java3.User;
+import com.xt.java3.base.BaseActivity;
 import com.xt.java3.modules.response.BaseResponse;
+import com.xt.java3.ui.main.frag.contacts.ContactsPresenter;
 import com.xt.java3.util.BitmapUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -25,7 +28,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
-public class ProfileActivity extends AppCompatActivity {
+public class ProfileActivity extends BaseActivity {
+
+
 
     @BindView(R.id.add)
     Button button;
@@ -51,15 +56,16 @@ public class ProfileActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(user != null){
 
-                    App.client.addFriend(user.getId()).subscribeOn(Schedulers.newThread())
+                    App.client.modifyFriends(Constant.ACTION_ADD,user.getId()).subscribeOn(Schedulers.newThread())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(new Consumer<BaseResponse>() {
                                 @Override
                                 public void accept(BaseResponse response) throws Exception {
                                     if (response.getStatus() == 0) {
+                                        EventBus.getDefault().post(ContactsPresenter.ADD_FRIENDS);
                                         ToastUtils.showShort("添加成功");
-                                    } else {
-                                        ToastUtils.showShort("添加失败");
+                                    } else if(response.getStatus() == -1) {
+                                        ToastUtils.showShort("不可重复添加");
                                     }
                                 }
                             }, new Consumer<Throwable>() {
@@ -79,9 +85,9 @@ public class ProfileActivity extends AppCompatActivity {
         EventBus.getDefault().unregister(this);
     }
 
+    //接受选择的人的资料,并显示UI
     @Subscribe(threadMode = ThreadMode.MAIN,sticky =  true)
     public void getUser(User user){
-        Log.e("ProfileActivity","GETSUER");
         this.user = user;
         head.setImageBitmap(BitmapUtils.base64ToBitmap(user.getAvatar()));
         nickname.setText(user.getNickname());

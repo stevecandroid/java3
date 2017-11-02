@@ -7,6 +7,9 @@ import com.xt.java3.App;
  */
 
 public class Utils {
+
+    public static String CHAT_PREFIX = "c:";
+
     public static String parseMessage(String msg){
         int start = msg.indexOf("<");
         if(start == -1 ) return msg;
@@ -15,6 +18,6 @@ public class Utils {
     }
 
     public static String encodeMessage(String message, String from , String[] to ){
-            return "from'"+ App.mUser.getId()+"'"+"to>" + to[0] + "<"+ message;
+            return CHAT_PREFIX+"from'"+ App.mUser.getId()+"'"+"to>" + to[0] + "<"+ message;
     }
 }

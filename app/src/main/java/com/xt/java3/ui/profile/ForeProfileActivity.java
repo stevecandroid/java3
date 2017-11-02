@@ -47,6 +47,7 @@ public class ForeProfileActivity extends AppCompatActivity {
         EventBus.getDefault().unregister(this);
     }
 
+    //得到搜索得到的用户的信息,并显示列表
     @Subscribe(threadMode = ThreadMode.MAIN,sticky = true)
     public void getUserList(EventUser users){
         if(users.users.size() > 0) {

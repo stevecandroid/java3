@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,14 +17,19 @@ import android.widget.TextView;
 
 import com.blankj.utilcode.util.ImageUtils;
 import com.blankj.utilcode.util.Utils;
+import com.data.xt.daka.util.pic.bitmap.BitmapUtil;
 import com.xt.java3.R;
 import com.xt.java3.User;
 import com.xt.java3.ui.chat.ChatActivity;
+import com.xt.java3.ui.main.frag.contacts.ContactsFrag;
 import com.xt.java3.util.BitmapUtils;
+import com.xt.java3.util.dialog.DialogHelper;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by steve on 17-10-24.
@@ -32,17 +38,19 @@ import java.util.List;
 public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.MyViewHolder> {
 
     private List<User> users;
-
     private Context context;
+    private ContactsFrag frag;
 
-    public FriendListAdapter(List<User> users) {
+
+    public FriendListAdapter(ContactsFrag frag , List<User> users) {
         this.users = users;
+        this.frag = frag;
     }
 
     @Override
     public MyViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
         context = parent.getContext();
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.friends_item,null,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.friends_item,parent,false);
         final MyViewHolder holder = new MyViewHolder(view);
 
         view.setOnClickListener(new View.OnClickListener() {
@@ -61,13 +69,32 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.My
             }
         });
 
+        view.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                DialogHelper.showEnsureDialog(context, "确认删除", new Runnable() {
+                    @Override
+                    public void run() {
+                        User user = users.get(holder.getAdapterPosition());
+                        frag.getPresenter().deleteFriend(user.getId(),holder.getAdapterPosition());
+                    }
+                });
+
+                return true;
+            }
+        });
+
         return holder;
     }
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        holder.name.setText( users.get(position).getNickname());
-        holder.avater.setImageBitmap(BitmapUtils.base64ToBitmap(users.get(position).getAvatar()));
+        holder.name.setText( users.get(holder.getAdapterPosition()).getNickname());
+        holder.avater.setImageBitmap(BitmapUtils.base64ToBitmap(users.get(holder.getAdapterPosition()).getAvatar()));
+        switch (users.get(holder.getAdapterPosition()).getStatus()){
+            case 0 : holder.status.setImageBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.offline));break;
+            case 1 : holder.status.setImageBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.online));break;
+        }
     }
 
     @Override
@@ -77,13 +104,15 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.My
 
     class MyViewHolder extends RecyclerView.ViewHolder{
 
-        ImageView avater ;
+        CircleImageView avater ;
         TextView name;
+        ImageView status;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             avater = itemView.findViewById(R.id.user_avater);
             name = itemView.findViewById(R.id.user_name);
+            status = itemView.findViewById(R.id.status);
         }
     }
 }
