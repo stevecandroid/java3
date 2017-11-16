@@ -1,4 +1,4 @@
-package com.data.xt.daka.util.pic.bitmap
+package com.xt.java3.util.pic.bitmap
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -24,7 +24,7 @@ class BitmapUtil {
 
     companion object {
 
-        @Throws(IOException::class)
+
         fun bitmapToBase64(bitmap: Bitmap?): String  {
 
             var result: String by Delegates.notNull()
@@ -61,16 +61,20 @@ class BitmapUtil {
          * @param base64Data
          * @return
          */
-        fun base64ToBitmap(base64Data: String): Bitmap {
+        fun base64ToBitmap(base64Data: String): Bitmap? {
+            if(base64Data == null) return null
             val bytes = Base64.decode(base64Data, Base64.DEFAULT)
             return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
         }
 
-        fun byte2image(data: ByteArray, path: String) {
-            if (data.size < 3 || path == "") return
-            val os = (FileOutputStream(path))
-            os.write(data, 0, data.size)
-            os.close()
+        fun base64toBytes(base64Data: String): ByteArray? {
+            return  Base64.decode(base64Data, Base64.DEFAULT)
+        }
+
+        fun Bitmap2Bytes(bm: Bitmap): ByteArray {
+            val baos = ByteArrayOutputStream()
+            bm.compress(Bitmap.CompressFormat.PNG, 80, baos)
+            return baos.toByteArray()
         }
 
         fun calculateInSampleSize(options: BitmapFactory.Options, reqSize:Long): Int {
@@ -101,12 +105,28 @@ class BitmapUtil {
             return BitmapFactory.decodeFile(path,o)
         }
 
+        fun compressByQuality(bitmap: Bitmap,maxByteSize: Long): Bitmap? {
+            if (maxByteSize <= 0) return null
+            val baos = ByteArrayOutputStream()
+            var quality = 100
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, baos)
+            while (bitmap.size() > maxByteSize && quality > 10) {
+                baos.reset()
+                Log.e("Companion",quality.toString())
+                bitmap.compress(Bitmap.CompressFormat.JPEG, { quality -= 10;quality }(), baos)
+            }
+            if (quality < 0) return null
+            val bytes = baos.toByteArray()
+            return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+        }
+
     }
 
 
 
 }
 
+fun Bitmap.size() = rowBytes * byteCount
 
 
 

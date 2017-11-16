@@ -92,7 +92,7 @@
                     android:imeActionId="6"
                     android:imeActionLabel="@string/action_sign_in_short"
                     android:imeOptions="actionUnspecified"
-                    android:inputType="text"
+                    android:inputType="textPassword"
                     android:singleLine="true" />
 
             </android.support.design.widget.TextInputLayout>
@@ -109,6 +109,16 @@
                 app:layout_constraintBottom_toTopOf="@+id/text_input_layout_account"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/imageView" />
+
+            <CheckBox
+                android:id="@+id/remenber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="16dp"
+                android:text="记住账户密码"
+                app:layout_constraintBottom_toTopOf="@+id/text_input_layout_account"
+                app:layout_constraintLeft_toLeftOf="parent" />
 
         </android.support.constraint.ConstraintLayout>
 

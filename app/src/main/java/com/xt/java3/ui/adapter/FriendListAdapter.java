@@ -15,15 +15,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.blankj.utilcode.util.ImageUtils;
-import com.blankj.utilcode.util.Utils;
-import com.data.xt.daka.util.pic.bitmap.BitmapUtil;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.xt.java3.Constant;
 import com.xt.java3.R;
 import com.xt.java3.User;
 import com.xt.java3.ui.chat.ChatActivity;
 import com.xt.java3.ui.main.frag.contacts.ContactsFrag;
-import com.xt.java3.util.BitmapUtils;
+
+
 import com.xt.java3.util.dialog.DialogHelper;
+import com.xt.java3.util.pic.bitmap.BitmapUtil;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -59,11 +61,9 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.My
 
                 //动画所需的图片通过evenbus 传给下一个活动
                 EventBus.getDefault().postSticky(users.get(holder.getAdapterPosition()));
-
                 Pair a = Pair.create(holder.name,"text");
                 Pair b = Pair.create(holder.avater,"avatar");
                 Bundle bundle = ActivityOptions.makeSceneTransitionAnimation((Activity) context,a,b).toBundle();
-
                 context.startActivity(new Intent(context, ChatActivity.class)
                         , bundle );
             }
@@ -72,6 +72,7 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.My
         view.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+
                 DialogHelper.showEnsureDialog(context, "确认删除", new Runnable() {
                     @Override
                     public void run() {
@@ -79,6 +80,7 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.My
                         frag.getPresenter().deleteFriend(user.getId(),holder.getAdapterPosition());
                     }
                 });
+
 
                 return true;
             }
@@ -90,7 +92,11 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.My
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         holder.name.setText( users.get(holder.getAdapterPosition()).getNickname());
-        holder.avater.setImageBitmap(BitmapUtils.base64ToBitmap(users.get(holder.getAdapterPosition()).getAvatar()));
+        Log.e("FriendListAdapter",Constant.IP+"avatar?id="+users.get(holder.getAdapterPosition()).getId());
+        Glide.with(context)
+                .load(Constant.IP+"avatar?id="+users.get(holder.getAdapterPosition()).getId())
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .into(holder.avater);
         switch (users.get(holder.getAdapterPosition()).getStatus()){
             case 0 : holder.status.setImageBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.offline));break;
             case 1 : holder.status.setImageBitmap(BitmapFactory.decodeResource(context.getResources(),R.drawable.online));break;

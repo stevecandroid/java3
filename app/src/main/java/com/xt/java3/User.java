@@ -22,7 +22,7 @@ import io.reactivex.functions.Function;
 
 public class User implements Cloneable{
 
-
+    public static boolean firstLogin = true;
     private int id;
     private int age;
     private String email;
@@ -108,7 +108,7 @@ public class User implements Cloneable{
         return App.client.register(request).doOnNext(new Consumer<BaseResponse>() {
             @Override
             public void accept(BaseResponse response) throws Exception {
-                if(response.getStatus() != RegisterPresenter.REGISTER_SUCCES){
+                if(response.getStatus() == RegisterPresenter.REGISTER_FAIL){
                     throw new BaseError(response.getStatus());
                 }
             }
@@ -193,6 +193,18 @@ public class User implements Cloneable{
             }
         });
     }
+
+    public static Observable<BaseResponse> deleteRecord(int to , long time , int direction ){
+        return App.client.deleteRecord(to,time,direction).doOnNext(new Consumer<BaseResponse>() {
+            @Override
+            public void accept(BaseResponse baseResponse) throws Exception {
+                if(baseResponse.getStatus() != 0 ){
+                    throw new RuntimeException("删除失败");
+                }
+            }
+        });
+    }
+
 
     @Override
     public Object clone() throws CloneNotSupportedException {

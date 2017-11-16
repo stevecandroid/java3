@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.BitmapFactory;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -18,6 +19,7 @@ import com.xt.java3.R;
 import com.xt.java3.modules.event.Message;
 import com.xt.java3.ui.main.MainActivity;
 import com.xt.java3.util.PreferenceMgr;
+import com.xt.java3.util.Utils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.java_websocket.client.WebSocketClient;
@@ -26,6 +28,8 @@ import org.java_websocket.handshake.ServerHandshake;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import retrofit2.http.Url;
 
 /**
  * Created by steve on 17-10-25.
@@ -154,14 +158,16 @@ public class WebService extends Service {
 
     NotificationManager manager ;
     private Notification createNotification(String msg){
+
         Intent intent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,1,intent,0);
         return new NotificationCompat.Builder(this,"web")
                 .setSmallIcon(R.mipmap.ic_launcher_round)
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
-                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(pendingIntent)
-                .setContentText(msg)
+                .setContentTitle("收到一条信息")
+                .setContentText(Utils.parseMessage(msg))
                 .setShowWhen(true)
                 .setAutoCancel(true)
                 .setVibrate(new long[]{0,500,300,500,400,700})

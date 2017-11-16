@@ -39,12 +39,17 @@ public interface Api {
     Observable<BaseResponse> modifyFriends(@Query("action") int action , @Field(value = "id",encoded = true) int id);
 
     @GET("/people/search")
-    Observable<SearchPeopleResopnse> search(@Query("id") int id , @Query("email") String email , @Query(value = "nickname",encoded = true) String nickname);
+    Observable<SearchPeopleResopnse> search(@Query("id") int id , @Query("email") String email ,
+                                            @Query(value = "nickname",encoded = true) String nickname);
 
     @GET("/record/search")
     Observable<SearchRecordResponse> searchRecods(@Query("to") int to );
 
     @POST("/user/modify")
     Observable<BaseResponse> uploadProfile(@Body User user);
+
+    @POST("/record/delete")
+    @FormUrlEncoded
+    Observable<BaseResponse> deleteRecord(@Field("u") int to , @Field("t") long time , @Field("d") int direction);
 }
 

@@ -10,7 +10,7 @@ import android.content.DialogInterface;
 
 public class DialogHelper {
 
-    public static void showEnsureDialog(Context ctx ,   String message, final Runnable runnable){
+    public static void showEnsureDialog(Context ctx ,  String message, final Runnable runnable){
         AlertDialog dialog = new AlertDialog.Builder(ctx).setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

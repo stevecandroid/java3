@@ -10,7 +10,7 @@ import com.xt.java3.modules.request.RegisterBody;
 public interface RegisterContract {
 
     interface View extends BaseView<Presetner> {
-        void onRegisterSuccess();
+        void onRegisterSuccess(int id );
         void onRegisterError(Throwable e);
     }
 

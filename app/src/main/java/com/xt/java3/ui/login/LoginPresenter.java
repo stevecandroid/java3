@@ -76,7 +76,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                 .subscribe(new Observer<SearchPeopleResopnse>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        view.onLoginStart();
+
                     }
 
                     @Override

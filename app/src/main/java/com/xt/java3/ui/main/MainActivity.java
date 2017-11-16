@@ -2,6 +2,7 @@ package com.xt.java3.ui.main;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -17,10 +18,11 @@ import android.view.View;
 import android.widget.TextView;
 
 
-import com.blankj.utilcode.util.ImageUtils;
 import com.blankj.utilcode.util.RegexUtils;
 import com.blankj.utilcode.util.ToastUtils;
-import com.data.xt.daka.util.pic.bitmap.BitmapUtil;
+import com.bumptech.glide.Glide;
+import com.xt.java3.Constant;
+import com.xt.java3.util.pic.bitmap.BitmapUtil;
 import com.xt.java3.App;
 import com.xt.java3.R;
 import com.xt.java3.User;
@@ -29,17 +31,12 @@ import com.xt.java3.modules.event.EventUser;
 import com.xt.java3.service.WebService;
 import com.xt.java3.ui.login.LoginActivity;
 import com.xt.java3.ui.main.frag.FragPagerAdaptaer;
-import com.xt.java3.ui.main.frag.chat.ChatFrag;
 import com.xt.java3.ui.main.frag.contacts.ContactsFrag;
 import com.xt.java3.ui.profile.ForeProfileActivity;
-import com.xt.java3.util.BitmapUtils;
 import com.xt.java3.util.PreferenceMgr;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,7 +67,6 @@ public class MainActivity extends BaseActivity implements  MainContract.View{
     TextView id ;
 
     MainContract.Presenter mPresenter;
-    private ChatFrag chatFrag;
     private ContactsFrag contactsFrag;
 
 
@@ -91,6 +87,7 @@ public class MainActivity extends BaseActivity implements  MainContract.View{
 
     @Override
     protected void onDestroy() {
+        unbindService(conn);
         super.onDestroy();
     }
 
@@ -100,19 +97,18 @@ public class MainActivity extends BaseActivity implements  MainContract.View{
 
         //初始化ViewParger和TabLayout
         List<android.support.v4.app.Fragment> frags = new ArrayList<>();
-        chatFrag = new ChatFrag();
         contactsFrag =  new ContactsFrag();
-        frags.add(chatFrag);
         frags.add(contactsFrag);
         viewPager.setAdapter(new FragPagerAdaptaer(getSupportFragmentManager(), frags));
         tabLayout.setupWithViewPager(viewPager);
-        tabLayout.getTabAt(0).setText("消息");
-        tabLayout.getTabAt(1).setText("联系人");
+        tabLayout.getTabAt(0).setText("联系人");
 
         //初始化侧拉菜单headerView
         View view = navigationView.getHeaderView(0);
         circleHead = view.findViewById(R.id.nav_avatar);
-        circleHead.setImageBitmap(BitmapUtils.base64ToBitmap(App.mUser.getAvatar()));
+
+//        circleHead.setImageBitmap(BitmapUtil.Companion.base64ToBitmap(App.mUser.getAvatar()));
+        Glide.with(this).load(Constant.IP+"avatar?id="+App.mUser.getId()).into(circleHead);
         id = view.findViewById(R.id.nav_id);
         id.setText(App.mUser.getNickname());
 
@@ -140,9 +136,13 @@ public class MainActivity extends BaseActivity implements  MainContract.View{
                     @Override
                     public Unit invoke(String s) {
                         try {
+                            Bitmap bitmap =
+                                    BitmapUtil.Companion.compressByQuality(
+                                            BitmapFactory.decodeFile(s),(1024*1024*2));
 
-                            String base64 = BitmapUtil.Companion.bitmapToBase64(BitmapFactory.decodeFile(s));
-                            circleHead.setImageBitmap(BitmapUtils.base64ToBitmap(base64));
+                            String base64 =  BitmapUtil.Companion.bitmapToBase64(bitmap);
+
+                            circleHead.setImageBitmap(bitmap);
 
                             User user = (User) App.mUser.clone();
                             user.setAvatar(base64);
@@ -150,7 +150,7 @@ public class MainActivity extends BaseActivity implements  MainContract.View{
                             Log.e("MainActivity",user.toString());
                             mPresenter.modifyUser(user);
 
-                        } catch (IOException | CloneNotSupportedException e) {
+                        } catch (CloneNotSupportedException e) {
                             e.printStackTrace();
                         }
                         return null;
@@ -225,7 +225,7 @@ public class MainActivity extends BaseActivity implements  MainContract.View{
 
     @Override
     public void onQueryError(Throwable e) {
-        ToastUtils.showShort("查询失败:" +e.toString());
+        ToastUtils.showShort("查询失败:" + "找不到此人");
     }
 
     @Override
@@ -235,6 +235,6 @@ public class MainActivity extends BaseActivity implements  MainContract.View{
 
     @Override
     public void onUploadError(Throwable e) {
-        ToastUtils.showShort(e.toString());
+        ToastUtils.showShort("修改失败");
     }
 }

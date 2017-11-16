@@ -15,7 +15,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class RegisterPresenter implements  RegisterContract.Presetner {
 
-    public static final int REGISTER_SUCCES = 0 ;
+    public static final int REGISTER_FAIL = -1 ;
 
     private RegisterContract.View view ;
 
@@ -32,10 +32,11 @@ public class RegisterPresenter implements  RegisterContract.Presetner {
                 .subscribe(new Consumer<BaseResponse>() {
                     @Override
                     public void accept(BaseResponse response) throws Exception {
-                        if(response.getStatus() == REGISTER_SUCCES){
-                            view.onRegisterSuccess();
+                        if(response.getStatus() == REGISTER_FAIL){
+                            view.onRegisterError(new RuntimeException("注册失败"));
+
                         }else{
-                            view.onRegisterError(new RuntimeException("未知异常"));
+                           view.onRegisterSuccess(response.getStatus());
                         }
                     }
                 }, new Consumer<Throwable>() {

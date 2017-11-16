@@ -18,7 +18,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.ToastUtils;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.xt.java3.App;
+import com.xt.java3.Constant;
 import com.xt.java3.R;
 import com.xt.java3.User;
 
@@ -26,8 +29,9 @@ import com.xt.java3.base.BaseActivity;
 import com.xt.java3.service.WebService;
 import com.xt.java3.modules.event.Message;
 import com.xt.java3.ui.adapter.RecycleChatAdapter;
-import com.xt.java3.util.BitmapUtils;
+
 import com.xt.java3.util.Utils;
+import com.xt.java3.util.pic.bitmap.BitmapUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -58,11 +62,13 @@ public class ChatActivity extends BaseActivity implements ChatContract.View {
     @BindView(R.id.send)
     Button send;
 
+    //聊天的对象
     private User user ;
 
+    //聊天的内容
     private List<Message> messages = new ArrayList<>();
 
-    private RecycleChatAdapter adapter = new RecycleChatAdapter(messages);
+    private RecycleChatAdapter adapter ;
 
     private ChatContract.Presenter mPresenter;
 
@@ -76,11 +82,14 @@ public class ChatActivity extends BaseActivity implements ChatContract.View {
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
 
+
+        //开启后台服务,接收信息
         bindService(new Intent(this, WebService.class),conn, Context.BIND_AUTO_CREATE);
 
         mPresenter = new ChatPresenter(this);
         mPresenter.getMessage(user.getId());
 
+        adapter = new RecycleChatAdapter(messages , user.getId());
         init();
 
     }
@@ -93,7 +102,7 @@ public class ChatActivity extends BaseActivity implements ChatContract.View {
     @Subscribe(threadMode = ThreadMode.MAIN ,sticky = true)
     public void getUser(User user){
         this.user = user;
-        avatar.setImageBitmap( BitmapUtils.base64ToBitmap(user.getAvatar()));
+        Glide.with(this).load(Constant.IP+"avatar?id="+user.getId()).diskCacheStrategy(DiskCacheStrategy.NONE).into(avatar);
         info.setText(user.getNickname());
     }
 
@@ -118,12 +127,16 @@ public class ChatActivity extends BaseActivity implements ChatContract.View {
 
     @OnClick(R.id.send)
     public void onClick(View view ){
+        //记录发送的时间
+        long currentTime = System.currentTimeMillis();
         //空内容不允许发送
         if(!message.getText().toString().equals("")) {
             //添加聊天的一项记录
-            messages.add(new Message(System.currentTimeMillis(), 1, message.getText().toString()));
+            messages.add(new Message(currentTime, 1, message.getText().toString()));
             //发送聊天信息至服务器
-            webService.send(Utils.encodeMessage(message.getText().toString(), String.valueOf(App.mUser.getId()), new String[]{String.valueOf(user.getId())}));
+            webService.send(Utils.encodeMessage(message.getText().toString(),
+                    String.valueOf(App.mUser.getId()),
+                    new String[]{String.valueOf(user.getId())},currentTime));
             //重置聊天框
             message.setText("");
             //更新UI

@@ -14,6 +14,7 @@ import com.xt.java3.R;
 import com.xt.java3.base.BaseActivity;
 import com.xt.java3.modules.request.RegisterBody;
 import com.xt.java3.ui.login.LoginActivity;
+import com.xt.java3.util.dialog.DialogHelper;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -55,9 +56,14 @@ public class RegisterActivity extends BaseActivity implements RegisterContract.V
     }
 
     @Override
-    public void onRegisterSuccess() {
-        Log.e("RegisterActivity","register Suceess");
-        startActivity(new Intent(this, LoginActivity.class));
+    public void onRegisterSuccess(int id ) {
+        DialogHelper.showEnsureDialog(this, "请记住你的ID：" + id + "登录请使用该id", new Runnable() {
+            @Override
+            public void run() {
+                startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+            }
+        });
+
     }
 
     @Override

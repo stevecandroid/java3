@@ -3,17 +3,23 @@ package com.xt.java3.ui.login;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatTextView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.blankj.utilcode.util.RegexUtils;
 import com.blankj.utilcode.util.ToastUtils;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.xt.java3.App;
+import com.xt.java3.Constant;
 import com.xt.java3.R;
 import com.xt.java3.User;
 import com.xt.java3.base.BaseActivity;
@@ -26,6 +32,7 @@ import com.xt.java3.ui.main.MainActivity;
 import com.xt.java3.ui.register.RegisterActivity;
 import com.xt.java3.util.ActivityLifeManager;
 import com.xt.java3.util.PreferenceMgr;
+import com.xt.java3.util.pic.bitmap.BitmapUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,19 +55,28 @@ public class LoginActivity extends BaseActivity implements LoginContract.View {
     @BindView(R.id.forget)
     Button forget;
 
+    @BindView(R.id.remenber)
+    CheckBox checkBox;
+
+    PreferenceMgr mgr = new PreferenceMgr("remenber");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        super.onCreate(savedInstanceState);
-
         mPresenter= new LoginPresenter(this);
         mPresenter.judgeState();
-
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+
+
         account.setText("111");
         password.setText("123456");
 
+        account.setText(mgr.get("id",""));
+        password.setText(mgr.get("password",""));
+        if(!account.getText().toString().equals("")){
+            checkBox.setChecked(true);
+        }
 
     }
 
@@ -68,6 +84,11 @@ public class LoginActivity extends BaseActivity implements LoginContract.View {
     public void login(View v){
         String account = this.account.getText().toString();
         String password = this.password.getText().toString();
+
+        if(checkBox.isChecked()) {
+            mgr.save("id", account);
+            mgr.save("password", password);
+        }
 
         if( RegexUtils.isMatch("^[0-9]*$",account) && !password.equals("") ) {
 
@@ -117,12 +138,21 @@ public class LoginActivity extends BaseActivity implements LoginContract.View {
     public void onLoginError(Throwable e) {
         if(e instanceof BaseError){
             int code = ((BaseError)e).getStatus();
-            if(code == -1)ToastUtils.showShort("账号不存在");
-            if(code == -2)ToastUtils.showShort("密码错误");
-            if(code == -3)ToastUtils.showShort("登录过时");
+            switch(code){
+                case -1 : ToastUtils.showShort("账号不存在");break;
+                case -2:ToastUtils.showShort("密码错误");break;
+                case -3:
+                    if(User.firstLogin) {
+                        ToastUtils.showShort("登录过时");
+                        User.firstLogin = false;
+                    }
+
+            }
+
         }else{
             Log.e("LoginActivity",e.getMessage());
         }
+        if(progress!= null)
         progress.dismiss();
     }
 
@@ -134,6 +164,7 @@ public class LoginActivity extends BaseActivity implements LoginContract.View {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        progress.dismiss();
+        if(progress!=null)
+            progress.dismiss();
     }
 }
