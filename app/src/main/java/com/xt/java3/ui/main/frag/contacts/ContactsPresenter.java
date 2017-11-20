@@ -1,8 +1,7 @@
 package com.xt.java3.ui.main.frag.contacts;
 
-import com.blankj.utilcode.util.ToastUtils;
-import com.xt.java3.User;
-import com.xt.java3.modules.response.BaseResponse;
+import com.xt.java3.modules.User;
+import com.xt.java3.base.BaseResponse;
 import com.xt.java3.modules.response.FriendsResponse;
 import com.xt.java3.modules.response.SearchPeopleResopnse;
 

@@ -3,6 +3,8 @@ package com.xt.java3;
 import android.app.Application;
 import com.blankj.utilcode.util.Utils;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import com.xt.java3.modules.User;
+import com.xt.java3.network.Api;
 import com.xt.java3.network.CookieInterceptor;
 import com.xt.java3.util.PreferenceMgr;
 import java.util.concurrent.TimeUnit;

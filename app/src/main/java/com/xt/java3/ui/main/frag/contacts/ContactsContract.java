@@ -1,6 +1,6 @@
 package com.xt.java3.ui.main.frag.contacts;
 
-import com.xt.java3.User;
+import com.xt.java3.modules.User;
 import com.xt.java3.base.BaseView;
 
 import java.util.List;

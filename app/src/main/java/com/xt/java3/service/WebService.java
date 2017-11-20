@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.xt.java3.Constant;
 import com.xt.java3.R;
 import com.xt.java3.modules.event.Message;
@@ -40,9 +41,9 @@ public class WebService extends Service {
     private WebSocketClient conn;
     private ServiceBinder binder = new ServiceBinder();
 
-    public static final String CHAT_PREFIX = "c:";
-    public static final String ONLINE = "u:";
-    public static final String OFFLINE = "d:";
+    public static final int CHAT_PREFIX = Message.CHAT;
+    public static String ONLINE = "u:";
+    public static String OFFLINE = "d:";
 
     @Nullable
     @Override
@@ -95,18 +96,18 @@ public class WebService extends Service {
                     @Override
                     public void onMessage(String message) {
 
-                        Log.e("WebService","onmessage " + message);
+                        if(message.startsWith(ONLINE) || message.startsWith(OFFLINE)){
+                            EventBus.getDefault().post(message);
+                        }
 
-                        String prefix = message.substring(0,2);
-                        switch(prefix){
+                        Message msg = new Gson().fromJson(message,Message.class);
+                        msg.setDirection(0);
+                        switch(msg.getType()){
                             case CHAT_PREFIX :
-                                EventBus.getDefault().post(new Message(System.currentTimeMillis(),0,message));
-                                manager.notify(1,createNotification(message));
+                                EventBus.getDefault().post(msg);
+                                manager.notify(1,createNotification(msg.getMessage()));
                                 break;
-                            case ONLINE:
-                            case OFFLINE:
-                                EventBus.getDefault().post(message);
-                                break;
+                            default:break;
                         }
 
                     }
@@ -127,9 +128,7 @@ public class WebService extends Service {
                 };
 
                 conn.connectBlocking();
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
+            } catch (URISyntaxException | InterruptedException e) {
                 e.printStackTrace();
             }
         }
@@ -167,7 +166,7 @@ public class WebService extends Service {
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(pendingIntent)
                 .setContentTitle("收到一条信息")
-                .setContentText(Utils.parseMessage(msg))
+                .setContentText((msg))
                 .setShowWhen(true)
                 .setAutoCancel(true)
                 .setVibrate(new long[]{0,500,300,500,400,700})

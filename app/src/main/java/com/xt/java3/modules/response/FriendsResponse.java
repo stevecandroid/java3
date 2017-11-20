@@ -1,5 +1,7 @@
 package com.xt.java3.modules.response;
 
+import com.xt.java3.base.BaseResponse;
+
 /**
  * Created by steve on 17-10-23.
  */

@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
@@ -21,11 +20,12 @@ import android.widget.TextView;
 import com.blankj.utilcode.util.RegexUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.xt.java3.Constant;
 import com.xt.java3.util.pic.bitmap.BitmapUtil;
 import com.xt.java3.App;
 import com.xt.java3.R;
-import com.xt.java3.User;
+import com.xt.java3.modules.User;
 import com.xt.java3.base.BaseActivity;
 import com.xt.java3.modules.event.EventUser;
 import com.xt.java3.service.WebService;
@@ -43,6 +43,9 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
@@ -51,8 +54,6 @@ public class MainActivity extends BaseActivity implements  MainContract.View{
     @BindView(R.id.view_pager)
     ViewPager viewPager;
 
-    @BindView(R.id.tab_layout)
-    TabLayout tabLayout;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -83,6 +84,7 @@ public class MainActivity extends BaseActivity implements  MainContract.View{
 
         initView();
 
+
     }
 
     @Override
@@ -100,15 +102,18 @@ public class MainActivity extends BaseActivity implements  MainContract.View{
         contactsFrag =  new ContactsFrag();
         frags.add(contactsFrag);
         viewPager.setAdapter(new FragPagerAdaptaer(getSupportFragmentManager(), frags));
-        tabLayout.setupWithViewPager(viewPager);
-        tabLayout.getTabAt(0).setText("联系人");
+
 
         //初始化侧拉菜单headerView
         View view = navigationView.getHeaderView(0);
         circleHead = view.findViewById(R.id.nav_avatar);
 
 //        circleHead.setImageBitmap(BitmapUtil.Companion.base64ToBitmap(App.mUser.getAvatar()));
-        Glide.with(this).load(Constant.IP+"avatar?id="+App.mUser.getId()).into(circleHead);
+        Glide.with(this)
+                .load(Constant.IP+"avatar?id="+App.mUser.getId())
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .into(circleHead);
+
         id = view.findViewById(R.id.nav_id);
         id.setText(App.mUser.getNickname());
 

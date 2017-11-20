@@ -1,9 +1,11 @@
-package com.xt.java3;
+package com.xt.java3.modules;
 
+import com.xt.java3.App;
+import com.xt.java3.Constant;
 import com.xt.java3.base.BaseError;
 import com.xt.java3.modules.request.LoginBody;
 import com.xt.java3.modules.request.RegisterBody;
-import com.xt.java3.modules.response.BaseResponse;
+import com.xt.java3.base.BaseResponse;
 import com.xt.java3.modules.response.FriendsResponse;
 import com.xt.java3.modules.response.LoginResponse;
 import com.xt.java3.modules.response.SearchPeopleResopnse;

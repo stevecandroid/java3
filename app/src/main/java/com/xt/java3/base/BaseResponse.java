@@ -1,4 +1,4 @@
-package com.xt.java3.modules.response;
+package com.xt.java3.base;
 
 /**
  * Created by steve on 17-10-22.

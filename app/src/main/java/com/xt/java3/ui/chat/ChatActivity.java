@@ -1,29 +1,24 @@
 package com.xt.java3.ui.chat;
 
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.IBinder;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.ToastUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.gson.Gson;
 import com.xt.java3.App;
 import com.xt.java3.Constant;
 import com.xt.java3.R;
-import com.xt.java3.User;
+import com.xt.java3.modules.User;
 
 import com.xt.java3.base.BaseActivity;
 import com.xt.java3.service.WebService;
@@ -31,7 +26,6 @@ import com.xt.java3.modules.event.Message;
 import com.xt.java3.ui.adapter.RecycleChatAdapter;
 
 import com.xt.java3.util.Utils;
-import com.xt.java3.util.pic.bitmap.BitmapUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -132,11 +126,16 @@ public class ChatActivity extends BaseActivity implements ChatContract.View {
         //空内容不允许发送
         if(!message.getText().toString().equals("")) {
             //添加聊天的一项记录
-            messages.add(new Message(currentTime, 1, message.getText().toString()));
+            Message msg = new Message(Message.CHAT,currentTime,
+                    message.getText().toString(),App.mUser.getId(),user.getId(),1);
+
+            messages.add(msg);
+
             //发送聊天信息至服务器
-            webService.send(Utils.encodeMessage(message.getText().toString(),
-                    String.valueOf(App.mUser.getId()),
-                    new String[]{String.valueOf(user.getId())},currentTime));
+            webService.send(new Gson().toJson(msg));
+//            webService.send(Utils.encodeMessage(message.getText().toString(),
+//                    String.valueOf(App.mUser.getId()),
+//                    new String[]{String.valueOf(user.getId())},currentTime));
             //重置聊天框
             message.setText("");
             //更新UI

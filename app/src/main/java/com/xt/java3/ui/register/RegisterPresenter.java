@@ -1,9 +1,8 @@
 package com.xt.java3.ui.register;
 
-import com.xt.java3.User;
-import com.xt.java3.modules.request.LoginBody;
+import com.xt.java3.modules.User;
 import com.xt.java3.modules.request.RegisterBody;
-import com.xt.java3.modules.response.BaseResponse;
+import com.xt.java3.base.BaseResponse;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;

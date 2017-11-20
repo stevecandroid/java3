@@ -1,18 +1,9 @@
 package com.xt.java3.ui.main;
 
-import android.content.Intent;
-
-import com.blankj.utilcode.util.ToastUtils;
 import com.xt.java3.App;
-import com.xt.java3.User;
-import com.xt.java3.modules.event.EventUser;
-import com.xt.java3.modules.response.BaseResponse;
+import com.xt.java3.modules.User;
+import com.xt.java3.base.BaseResponse;
 import com.xt.java3.modules.response.SearchPeopleResopnse;
-import com.xt.java3.ui.main.MainActivity;
-import com.xt.java3.ui.main.MainContract;
-import com.xt.java3.ui.profile.ForeProfileActivity;
-
-import org.greenrobot.eventbus.EventBus;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;

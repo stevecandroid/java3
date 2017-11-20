@@ -6,7 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.xt.java3.R;
-import com.xt.java3.User;
+import com.xt.java3.modules.User;
 import com.xt.java3.modules.event.EventUser;
 import com.xt.java3.ui.adapter.SearchAdapter;
 

@@ -2,7 +2,6 @@ package com.xt.java3.ui.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,14 +11,13 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.xt.java3.App;
 import com.xt.java3.R;
 import com.xt.java3.modules.event.Message;
-import com.xt.java3.modules.response.BaseResponse;
+import com.xt.java3.base.BaseResponse;
 import com.xt.java3.util.Utils;
 import com.xt.java3.util.dialog.DialogHelper;
 
 import java.util.List;
 
 import io.reactivex.Observer;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -110,7 +108,7 @@ public class RecycleChatAdapter extends RecyclerView.Adapter<RecycleChatAdapter.
 
     @Override
     public void onBindViewHolder(MyChatViewHolder holder, int position) {
-        holder.message.setText(Utils.parseMessage(messages.get(holder.getAdapterPosition()).getMessage()));
+        holder.message.setText((messages.get(holder.getAdapterPosition()).getMessage()));
     }
 
     @Override

@@ -19,13 +19,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.xt.java3.Constant;
 import com.xt.java3.R;
-import com.xt.java3.User;
+import com.xt.java3.modules.User;
 import com.xt.java3.ui.chat.ChatActivity;
 import com.xt.java3.ui.main.frag.contacts.ContactsFrag;
 
 
 import com.xt.java3.util.dialog.DialogHelper;
-import com.xt.java3.util.pic.bitmap.BitmapUtil;
 
 import org.greenrobot.eventbus.EventBus;
 

@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 
 import com.blankj.utilcode.util.ToastUtils;
 import com.xt.java3.R;
-import com.xt.java3.User;
+import com.xt.java3.modules.User;
 import com.xt.java3.ui.adapter.FriendListAdapter;
 
 import org.greenrobot.eventbus.EventBus;
